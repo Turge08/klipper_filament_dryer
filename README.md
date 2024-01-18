@@ -10,11 +10,12 @@ Klipper add-on to turn on a filament dryer heater based on the humidity level. A
 
 <pre>[filament_dryer filament_dryer]
 interval: 1
-sensor: bme680
-heater: filament_heater 
+sensor: dryer_sensor
+heater: dryer_heater
 target_humidity: 30
 target_temp: 60
-default_dry_time: 45</pre>
+default_manual_dry_time: 45
+auto_dry_time: 30</pre>
 
 ## Requirements
 
@@ -25,10 +26,10 @@ default_dry_time: 45</pre>
 
 The following configs are also required for the heater and temperature sensor:
 
-<pre>[heater_generic filament_heater]
+<pre>[heater_generic dryer_heater]
 heater_pin: dryer:gpio6
 sensor_type: temperature_combined
-sensor_list: temperature_sensor bme680
+sensor_list: temperature_sensor dryer_sensor
 maximum_deviation: 999
 combination_method: min
 control: watermark
@@ -36,7 +37,7 @@ max_delta: 3.0
 min_temp: 0
 max_temp: 100
 
-[temperature_sensor bme680]
+[temperature_sensor dryer_sensor]
 sensor_type: BME280
 i2c_bus: i2c3_PB3_PB4
 i2c_address: 119</pre>
@@ -63,7 +64,8 @@ sudo rm -r ~/klipper/klippy/extras/filament_dryer.py</pre>
 - **heater**: heater to control
 - **target_humidity**: Target humidity. If humidity is above the target, the heater will be enabled. Once the humidity is below the target, the heater is turned off
 - **target_temp**: Temperature the heater will be set to when enabled
-- **default_dry_time**: When manually enabling the dryer, the heater will be enabled for this amount of minutes unless specified otherwise
+- **default_manual_dry_time**: When manually enabling the dryer, the heater will be enabled for this amount of minutes unless specified otherwise
+- **auto_dry_time**: When automatically enabling the dryer based on the humidity, setting this value to non-zero will force the dryer to remain enabled for this amount of minutes
 
 ## Manual Filament Drying
 
