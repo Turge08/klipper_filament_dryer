@@ -1,0 +1,5 @@
+[update_manager klipper_filament_dryer]
+type: git_repo
+path: ~/klipper_filament_dryer
+origin: https://github.com/Turge08/klipper_filament_dryer
+is_system_service: False
