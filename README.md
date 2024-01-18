@@ -85,5 +85,14 @@ gcode:
 
 ![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/d6d41c2f-8a88-4147-98a0-ef559735fbcd)
 
+## Misc
+
+Running the GCode command "GET_FILAMENT_DRYER_INFO" will return information about the dryer including the time remaining if the heater is enabled:
+
+<pre>// Humidity: 26
+// Temperature: 23
+// Target Temp: 60
+// Dry Mode: Manual
+// Dry Time Left: 0:00:57</pre>
 
 
