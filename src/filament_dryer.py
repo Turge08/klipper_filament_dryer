@@ -76,12 +76,15 @@ class filament_dryer:
 
     cmd_DRY_FILAMENT_help = "Dries filament for XX minutes"
     def cmd_DRY_FILAMENT(self, gcmd):
-        self.dry_time = gcmd.get_int('MINUTES', self.default_manual_dry_time, minval=1, maxval=600)
-        self.gcode.respond_info("Drying filament for %i minutes" % (self.dry_time))
+        self.dry_time = gcmd.get_int('MINUTES', self.default_manual_dry_time, minval=0, maxval=600)
         reactor = self.printer.get_reactor()
         self.dry_target_time = reactor.monotonic() + self.dry_time * 60
-        self.dry_mode = "Manual"
-        self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.target_temp))
+        if self.dry_time == 0:
+            self.gcode.respond_info("Turning off manual drying")
+        else:
+            self.gcode.respond_info("Drying filament for %i minutes" % (self.dry_time))
+            self.dry_mode = "Manual"
+            self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.target_temp))
 
     def get_status(self, eventtime):
         seconds = self.dry_target_time - self.printer.get_reactor().monotonic()
