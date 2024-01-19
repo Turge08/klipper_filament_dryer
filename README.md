@@ -2,11 +2,11 @@
 
 ## ** CURRENTLY IN BETA **
 
-## Introduction:
+## Introduction
 
 Klipper add-on to turn on a filament dryer heater based on the humidity level. A GCode command is also provided to dry the filament on demand for xx minutes.
 
-## Sample Config:
+## Sample Config
 
 <pre>[filament_dryer filament_dryer]
 interval: 1
@@ -22,7 +22,7 @@ auto_dry_time: 30</pre>
 - Humidity/Temperature Sensor such as BME280/680
 - Heater
 
-## Additional Config Needed:
+## Additional Config Needed
 
 The following configs are also required for the heater and temperature sensor:
 
@@ -40,9 +40,30 @@ max_temp: 100
 [temperature_sensor dryer_sensor]
 sensor_type: BME280
 i2c_bus: i2c3_PB3_PB4
-i2c_address: 119</pre>
+i2c_address: 119
+
+[heater_fan dryer_fan]
+pin: dryer:gpio14
+max_power: 0.5
+off_below: 0.31
+heater: dryer_heater
+heater_temp: 25
+shutdown_speed: 0</pre>
 
 The BME280 config above will depend on the MCU you're using. Please refer to the [Klipper Config Reference](https://www.klipper3d.org/Config_Reference.html#bmp180bmp280bme280bme680-temperature-sensor) or [Klipper Discord](https://discord.klipper3d.org/) for help on configuring this sensor.
+
+Note that a heater_fan is added to ensure the fan turns on with the heater and turns off when the dryer chamber temp is below a certain threshold (in this case, 25 degrees). Max_power should also be adjusted to your needs. If using more than 1 fan, consider configuring these as [multi_pin](https://www.klipper3d.org/Config_Reference.html#multi_pin):
+
+<pre>[multi_pin multi_dryer_fans]
+pins: dryer:gpio14,dryer:gpio13
+
+[heater_fan dryer_fans]
+pin: multi_pin:multi_dryer_fans
+max_power: 0.5
+off_below: 0.31
+heater: dryer_heater
+heater_temp: 25
+shutdown_speed: 0</pre>
 
 ## Install
 
