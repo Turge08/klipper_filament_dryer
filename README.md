@@ -93,7 +93,7 @@ sudo rm -r ~/klipper/klippy/extras/filament_dryer.py</pre>
 The dryer can be manually enabled for the default dry time by running the following gcode command: DRY_FILAMENT
 To dry the filament for a custom time: DRY_FILAMENT MINUTES=120
 
-Alternatively, add this macro to printer.cfg to manually enable the dryer from Fluidd or Mainsail:
+Alternatively, you can add this macro to printer.cfg to have it show up in your list of Macros in Fluidd/Mainsail:
 
 <pre>[gcode_macro DRY_FILAMENT]
 rename_existing: BASE_DRY_FILAMENT
@@ -104,7 +104,9 @@ gcode:
         BASE_DRY_FILAMENT
     {% endif %}</pre>
 
-![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/d6d41c2f-8a88-4147-98a0-ef559735fbcd)
+![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/e2d87cb1-3e4a-42f7-8c69-24ba62511184)
+
+Leave "MINUTES" blank to use the value from "default_manual_dry_time".
 
 ## Misc
 
