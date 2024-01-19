@@ -98,7 +98,7 @@ Alternatively, you can add this macro to printer.cfg to have it show up in your 
 <pre>[gcode_macro DRY_FILAMENT]
 rename_existing: BASE_DRY_FILAMENT
 gcode:
-    {% if 'MINUTES' in params %}
+    {% if 'MINUTES' in params and params.MINUTES %}
         BASE_DRY_FILAMENT MINUTES={params.MINUTES}
     {% else %}
         BASE_DRY_FILAMENT
