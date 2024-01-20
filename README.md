@@ -13,7 +13,8 @@ interval: 1
 sensor: dryer_sensor
 heater: dryer_heater
 target_humidity: 30
-target_temp: 60
+auto_target_temp: 60
+manual_target_temp: 80
 default_manual_dry_time: 45
 auto_dry_time: 30</pre>
 
@@ -84,25 +85,24 @@ sudo rm -r ~/klipper/klippy/extras/filament_dryer.py</pre>
 - **sensor**: Sensor name of the humidity/temperature sensor
 - **heater**: heater to control
 - **target_humidity**: Target humidity. If humidity is above the target, the heater will be enabled. Once the humidity is below the target, the heater is turned off
-- **target_temp**: Temperature the heater will be set to when enabled
+- **auto_target_temp**: Temperature the heater will be set to when automatically enabled
+- **manual_target_temp**: Temperature the heater will be set to when manually enabled
 - **default_manual_dry_time**: When manually enabling the dryer, the heater will be enabled for this amount of minutes unless specified otherwise
 - **auto_dry_time**: When automatically enabling the dryer based on the humidity, setting this value to non-zero will force the dryer to remain enabled for this amount of minutes
 
 ## Manual Filament Drying
 
-The dryer can be manually enabled for the default dry time by running the following gcode command: DRY_FILAMENT
-To dry the filament for a custom time: DRY_FILAMENT MINUTES=120
+The dryer can be manually enabled for the default dry time and temperature by running the following gcode command: DRY_FILAMENT
+To dry the filament for a custom time and temperature: DRY_FILAMENT MINUTES=120 TEMP=80
 
 Alternatively, you can add this macro to printer.cfg to have it show up in your list of Macros in Fluidd/Mainsail:
 
 <pre>[gcode_macro DRY_FILAMENT]
 rename_existing: BASE_DRY_FILAMENT
 gcode:
-    {% if 'MINUTES' in params and params.MINUTES %}
-        BASE_DRY_FILAMENT MINUTES={params.MINUTES}
-    {% else %}
-        BASE_DRY_FILAMENT
-    {% endif %}</pre>
+    {% set minutes = params.MINUTES | default(60) %}
+    {% set temp = params.TEMP | default(70) %}
+    BASE_DRY_FILAMENT MINUTES={minutes} TEMP={temp}</pre>
 
 ![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/e2d87cb1-3e4a-42f7-8c69-24ba62511184)
 

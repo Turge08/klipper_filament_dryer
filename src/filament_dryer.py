@@ -10,7 +10,8 @@ class filament_dryer:
         self.dry_target_time = reactor.monotonic()
         self.dry_mode = "Off"
         self.heater_name = config.get('heater')
-        self.target_temp = config.getint('target_temp', 60, 20, 100)
+        self.auto_target_temp = config.getint('auto_target_temp', 60, 20, 100)
+        self.manual_target_temp = config.getint('manual_target_temp', 60, 20, 100)
         self.default_manual_dry_time = config.getint('default_manual_dry_time', 60, 1, 600)
         self.auto_dry_time = config.getint('auto_dry_time', 0, 0, 600)
         self.target_humidity = config.getint('target_humidity', 30, 10, 100)
@@ -34,7 +35,7 @@ class filament_dryer:
             if self.sensor.humidity > self.target_humidity:
                 if self.heater.target_temp == 0:
                     self.gcode.respond_info("Turning on heater")
-                    self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.target_temp))
+                    self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.auto_target_temp))
                     self.dry_mode = "Auto"
                     if self.auto_dry_time > 0:
                         self.dry_target_time = reactor.monotonic() + self.auto_dry_time * 60
@@ -77,6 +78,7 @@ class filament_dryer:
     cmd_DRY_FILAMENT_help = "Dries filament for XX minutes"
     def cmd_DRY_FILAMENT(self, gcmd):
         self.dry_time = gcmd.get_int('MINUTES', self.default_manual_dry_time, minval=0, maxval=600)
+        target_temp = gcmd.get_int('TEMP', self.manual_target_temp, minval=20, maxval=100)
         reactor = self.printer.get_reactor()
         self.dry_target_time = reactor.monotonic() + self.dry_time * 60
         if self.dry_time == 0:
@@ -84,7 +86,7 @@ class filament_dryer:
         else:
             self.gcode.respond_info("Drying filament for %i minutes" % (self.dry_time))
             self.dry_mode = "Manual"
-            self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.target_temp))
+            self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, target_temp))
 
     def get_status(self, eventtime):
         seconds = self.dry_target_time - self.printer.get_reactor().monotonic()
