@@ -16,7 +16,14 @@ target_humidity: 30
 auto_target_temp: 60
 manual_target_temp: 80
 default_manual_dry_time: 45
-auto_dry_time: 30</pre>
+auto_dry_time: 30
+manual_dryer_on_macro: MANUAL_DRYER_ON_MACRO
+auto_dryer_on_macro: AUTO_DRYER_ON_MACRO
+dryer_off_macro: DRYER_OFF_MACRO
+vent_interval: 2
+vent_length: 3
+vent_start_macro: OPEN_VENT
+vent_end_macro: CLOSE_VENT</pre>
 
 ## Requirements
 
@@ -89,6 +96,13 @@ sudo rm -r ~/klipper/klippy/extras/filament_dryer.py</pre>
 - **manual_target_temp**: Temperature the heater will be set to when manually enabled
 - **default_manual_dry_time**: When manually enabling the dryer, the heater will be enabled for this amount of minutes unless specified otherwise
 - **auto_dry_time**: When automatically enabling the dryer based on the humidity, setting this value to non-zero will force the dryer to remain enabled for this amount of minutes
+- **manual_dryer_on_macro**: name of macro to execute when heater is manually enabled
+- **auto_dryer_on_macro**: name of macro to execute when heater is manually enabled
+- **dryer_off_macro**:  name of macro to execute when heater is disabled
+- **vent_interval**: interval in minutes to execute the vent open macro (see vent_start_macro)
+- **vent_length**: length of time in seconds before executing the vent close macro (see vent_end_macro)
+- **vent_start_macro**: name of macro to execute to open the vent
+- **vent_end_macro**:  name of macro to execute to close the vent
 
 ## Manual Filament Drying
 
@@ -107,6 +121,13 @@ gcode:
 ![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/e2d87cb1-3e4a-42f7-8c69-24ba62511184)
 
 Leave "MINUTES" blank to use the value from "default_manual_dry_time".
+
+To stop the filament dryer, you can execute STOP_FILAMENT_DRYER or use the following macro:
+
+<pre>[gcode_macro STOP_FILAMENT_DRYER]
+rename_existing: BASE_STOP_FILAMENT_DRYER
+gcode:
+    BASE_STOP_FILAMENT_DRYER</pre>
 
 ## Misc
 
