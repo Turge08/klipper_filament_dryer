@@ -118,9 +118,7 @@ gcode:
     {% set temp = params.TEMP | default(70) %}
     BASE_DRY_FILAMENT MINUTES={minutes} TEMP={temp}</pre>
 
-![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/e2d87cb1-3e4a-42f7-8c69-24ba62511184)
-
-Leave "MINUTES" blank to use the value from "default_manual_dry_time".
+![image](https://github.com/Turge08/klipper_filament_dryer/assets/6312320/969f4eec-ba11-4fab-a9bb-ace189d2fd9f)
 
 To stop the filament dryer, you can execute STOP_FILAMENT_DRYER or use the following macro:
 
