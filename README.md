@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Klipper add-on to turn on a filament dryer heater based on the humidity level. A GCode command is also provided to dry the filament on demand for xx minutes.
+Klipper add-on to automatically turn on a filament dryer heater based on the humidity level or manually for a specified amount of time. An optional can also be opened/closed on an interval.
 
 ## Sample Config
 
@@ -29,6 +29,7 @@ vent_end_macro: CLOSE_VENT</pre>
 
 - Humidity/Temperature Sensor such as BME280/680
 - Heater
+- Vent (optional)
 
 ## Additional Config Needed
 
