@@ -55,7 +55,7 @@ class filament_dryer:
             if self.vent_end_macro:
                 self.gcode.respond_info("Executing %s" % (self.vent_end_macro))
                 self.gcode.run_script_from_command(self.vent_end_macro)
-            self.vent_target_time = reactor.monotonic() + self.vent_interval
+            self.vent_target_time = reactor.monotonic() + self.vent_interval * 60
         elif reactor.monotonic() > self.vent_target_time and self.vent_mode == "Closed":
             self.vent_mode = "Open"
             if self.vent_start_macro:
@@ -83,7 +83,7 @@ class filament_dryer:
                         self.gcode.respond_info("Current humidity: %i, Target humidity: %i. Turning on heater" % (self.sensor.humidity, self.target_humidity))
                         self.dry_target_time = reactor.monotonic()
                     if self.vent_interval > 0:
-                        self.vent_target_time = reactor.monotonic() + self.vent_interval
+                        self.vent_target_time = reactor.monotonic() + self.vent_interval * 60
                         self.vent_mode = "Closed"
             else:
                 if self.heater.target_temp != 0:
@@ -135,7 +135,7 @@ class filament_dryer:
         reactor = self.printer.get_reactor()
         self.dry_target_time = reactor.monotonic() + self.dry_time * 60
         if self.vent_interval > 0:
-            self.vent_target_time = reactor.monotonic() + self.vent_interval
+            self.vent_target_time = reactor.monotonic() + self.vent_interval * 60
             self.vent_mode = "Closed"
         if self.dry_time == 0:
             self.gcode.respond_info("Turning off manual drying")
