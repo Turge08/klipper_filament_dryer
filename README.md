@@ -138,4 +138,93 @@ Running the GCode command "GET_FILAMENT_DRYER_INFO" will return information abou
 // Dry Mode: Manual
 // Dry Time Left: 0:00:57</pre>
 
+## Example
 
+My test filament dryer includes all controlled by a BTT EBB42 can bus toolhead PCB as the "dryer" mcu:
+
+- a 24V 300W heater with a 24V fan
+- a BME280 temperature and humidity sensor
+- an iris vent controlled with a FS90R servo with another 24V fan
+
+Full config:
+
+<pre>[filament_dryer filament_dryer]
+interval: 1
+sensor: dryer_sensor
+heater: dryer_heater 
+target_humidity: 30
+auto_target_temp: 60
+manual_target_temp: 70
+default_manual_dry_time: 120
+auto_dry_time: 0
+#manual_dryer_on_macro: MANUAL_DRYER_ON_MACRO
+#auto_dryer_on_macro: AUTO_DRYER_ON_MACRO
+#dryer_off_macro: DRYER_OFF_MACRO
+vent_interval: 30
+vent_length: 5
+vent_start_macro: OPEN_VENT
+vent_end_macro: CLOSE_VENT
+
+[servo dryer_vent]
+pin: dryer:PB9
+initial_angle: 180
+maximum_servo_angle: 250
+
+[heater_fan dryer_fan]
+pin: dryer:PA1
+max_power: 0.5
+off_below: 0.31
+heater: dryer_heater
+heater_temp: 25
+shutdown_speed: 0
+
+[fan_generic vent_fan]
+pin: dryer:PA0
+max_power: 1
+
+[heater_generic dryer_heater]
+heater_pin: dryer:PA2
+sensor_type: temperature_combined
+sensor_list: temperature_sensor dryer_sensor
+maximum_deviation: 999
+combination_method: min
+control: watermark
+max_delta: 3.0
+min_temp: 0
+max_temp: 100
+
+[temperature_sensor dryer_sensor]
+sensor_type: BME280
+i2c_bus: i2c3_PB3_PB4
+i2c_mcu: dryer
+
+[gcode_macro OPEN_VENT]
+gcode:
+    #SET_SERVO SERVO=dryer_vent ANGLE=270
+    SET_FAN_SPEED FAN=vent_fan SPEED=1
+    SET_SERVO SERVO=dryer_vent ANGLE=130
+    G4 P{params.DELAY|default(900)}
+    SET_SERVO SERVO=dryer_vent ANGLE=180
+    SET_SERVO SERVO=dryer_vent WIDTH=0
+
+[gcode_macro CLOSE_VENT]
+gcode:
+    #SET_SERVO SERVO=dryer_vent ANGLE=270
+    SET_SERVO SERVO=dryer_vent ANGLE=230
+    G4 P{params.DELAY|default(900)}
+    SET_SERVO SERVO=dryer_vent ANGLE=180
+    SET_SERVO SERVO=dryer_vent WIDTH=0
+    SET_FAN_SPEED FAN=vent_fan SPEED=0
+
+[gcode_macro DRY_FILAMENT]
+rename_existing: BASE_DRY_FILAMENT
+gcode:
+    {% set minutes = params.MINUTES | default(120) %}
+    {% set temp = params.TEMP | default(70) %}
+    BASE_DRY_FILAMENT MINUTES={minutes} TEMP={temp}
+
+[gcode_macro STOP_FILAMENT_DRYER]
+rename_existing: BASE_STOP_FILAMENT_DRYER
+gcode:
+    BASE_STOP_FILAMENT_DRYER
+</pre>
