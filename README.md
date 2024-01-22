@@ -203,15 +203,14 @@ gcode:
     #SET_SERVO SERVO=dryer_vent ANGLE=270
     SET_FAN_SPEED FAN=vent_fan SPEED=1
     SET_SERVO SERVO=dryer_vent ANGLE=130
-    G4 P{params.DELAY|default(900)}
+    G4 P900
     SET_SERVO SERVO=dryer_vent ANGLE=180
     SET_SERVO SERVO=dryer_vent WIDTH=0
 
 [gcode_macro CLOSE_VENT]
 gcode:
-    #SET_SERVO SERVO=dryer_vent ANGLE=270
     SET_SERVO SERVO=dryer_vent ANGLE=230
-    G4 P{params.DELAY|default(900)}
+    G4 P900
     SET_SERVO SERVO=dryer_vent ANGLE=180
     SET_SERVO SERVO=dryer_vent WIDTH=0
     SET_FAN_SPEED FAN=vent_fan SPEED=0
