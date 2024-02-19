@@ -21,8 +21,8 @@ class filament_dryer:
         self.dryer_off_macro = config.get('dryer_off_macro', '')
         self.vent_interval = config.getint('vent_interval', 0, 0, 600)
         self.vent_length = config.getint('vent_length', 0, 0, 600)
-        self.vent_start_macro = config.get('vent_start_macro')
-        self.vent_end_macro = config.get('vent_end_macro')
+        self.vent_start_macro = config.get('vent_start_macro', '')
+        self.vent_end_macro = config.get('vent_end_macro', '')
         self.vent_mode = "Off"
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command("GET_FILAMENT_DRYER_INFO",
