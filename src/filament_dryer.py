@@ -71,7 +71,7 @@ class filament_dryer:
             if self.dryer_off_macro:
                 self.gcode.respond_info("Executing %s" % (self.dryer_off_macro))
                 self.gcode.run_script_from_command(self.dryer_off_macro)
-        if reactor.monotonic() > self.dry_target_time or self.heater.target_temp == 0:
+        if self.dry_mode != "Off" and (reactor.monotonic() > self.dry_target_time or self.heater.target_temp == 0):
             if self.sensor.humidity > self.target_humidity:
                 if self.heater.target_temp == 0:
                     self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.auto_target_temp))
