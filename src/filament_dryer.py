@@ -106,6 +106,11 @@ class filament_dryer:
         reactor.register_timer(self.callback, reactor.monotonic() + self.interval)
         if self.vent_interval > 0:
             reactor.register_timer(self.venting_callback, reactor.monotonic() + self.interval)
+        if self.auto_target_temp > self.heater.max_temp - 2:
+            raise self.printer.config_error("auto_target_temp of %s needs to be at least 2 degrees below heater max temp of %s" % (self.auto_target_temp, self.heater.max_temp))
+        if self.manual_target_temp > self.heater.max_temp - 2:
+            raise self.printer.config_error("manual_target_temp of %s needs to be at least 2 degrees below heater max temp of %s" % (self.manual_target_temp, self.heater.max_temp))
+        self.gcode.respond_info("Max Heater Temp: %f" % (self.heater.max_temp))
 
     cmd_GET_FILAMENT_DRYER_INFO_help = "Get Filament Dryer Info"
     def cmd_GET_FILAMENT_DRYER_INFO(self, gcmd):
@@ -132,6 +137,9 @@ class filament_dryer:
     def cmd_DRY_FILAMENT(self, gcmd):
         self.dry_time = gcmd.get_int('MINUTES', self.default_manual_dry_time, minval=0, maxval=600)
         target_temp = gcmd.get_int('TEMP', self.manual_target_temp, minval=20, maxval=100)
+        if target_temp > self.heater.max_temp - 2:
+            self.gcode.respond_info("target_temp of %s needs to be at least 2 degrees below heater max temp of %s" % (target_temp, self.heater.max_temp))
+            return
         reactor = self.printer.get_reactor()
         self.dry_target_time = reactor.monotonic() + self.dry_time * 60
         if self.vent_interval > 0:
