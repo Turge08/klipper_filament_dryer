@@ -24,6 +24,8 @@ class filament_dryer:
         self.vent_start_macro = config.get('vent_start_macro', '')
         self.vent_end_macro = config.get('vent_end_macro', '')
         self.vent_mode = "Off"
+        if self.vent_interval == 0:
+            self.vent_mode = "Disabled"
         self.gcode = self.printer.lookup_object('gcode')
         self.gcode.register_command("GET_FILAMENT_DRYER_INFO",
             self.cmd_GET_FILAMENT_DRYER_INFO,
@@ -129,9 +131,10 @@ class filament_dryer:
         seconds = self.vent_target_time - self.printer.get_reactor().monotonic()
         if self.vent_mode == "Off":
             seconds = 0
-        mm, ss = divmod(seconds, 60)
-        hh, mm = divmod(mm, 60)
-        self.gcode.respond_info("Vent Time Left: %i:%02i:%02i" % (hh,mm,ss))
+        if self.vent_mode != "Disabled":
+            mm, ss = divmod(seconds, 60)
+            hh, mm = divmod(mm, 60)
+            self.gcode.respond_info("Vent Time Left: %i:%02i:%02i" % (hh,mm,ss))
 
     cmd_DRY_FILAMENT_help = "Dries filament for XX minutes"
     def cmd_DRY_FILAMENT(self, gcmd):
