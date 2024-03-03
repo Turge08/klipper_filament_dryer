@@ -87,6 +87,9 @@ class filament_dryer:
                     if self.vent_interval > 0:
                         self.vent_target_time = reactor.monotonic() + self.vent_interval * 60
                         self.vent_mode = "Closed"
+                    if self.auto_dryer_on_macro:
+                        self.gcode.respond_info("Executing %s" % (self.auto_dryer_on_macro))
+                        self.gcode.run_script_from_command(self.auto_dryer_on_macro)
             else:
                 if self.dry_mode != "Off" and self.heater.target_temp != 0:
                     self.gcode.respond_info("Current humidity: %i, Target humidity: %i. Turning off heater." % (self.sensor.humidity, self.target_humidity))
@@ -155,6 +158,7 @@ class filament_dryer:
             self.dry_mode = "Manual"
             self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, target_temp))
             if self.manual_dryer_on_macro:
+                self.gcode.respond_info("Executing %s" % (self.manual_dryer_on_macro))
                 self.gcode.run_script_from_command(self.manual_dryer_on_macro)
 
     cmd_STOP_FILAMENT_DRYER_help = "Stops filament dryer heater"
