@@ -15,7 +15,8 @@ class filament_dryer:
         self.manual_target_temp = config.getint('manual_target_temp', 60, 20, 100)
         self.default_manual_dry_time = config.getint('default_manual_dry_time', 60, 1, 600)
         self.auto_dry_time = config.getint('auto_dry_time', 0, 0, 600)
-        self.target_humidity = config.getint('target_humidity', 30, 10, 100)
+        self.target_humidity = config.getint('target_humidity', 30, 2, 100)
+        self.dryer_enabled = True
         self.manual_dryer_on_macro = config.get('manual_dryer_on_macro', '')
         self.auto_dryer_on_macro = config.get('auto_dryer_on_macro', '')
         self.dryer_off_macro = config.get('dryer_off_macro', '')
@@ -36,6 +37,12 @@ class filament_dryer:
         self.gcode.register_command("STOP_FILAMENT_DRYER",
             self.cmd_STOP_FILAMENT_DRYER,
             desc=self.cmd_STOP_FILAMENT_DRYER_help)
+        self.gcode.register_command("DISABLE_FILAMENT_DRYER",
+            self.cmd_DISABLE_FILAMENT_DRYER,
+            desc=self.cmd_DISABLE_FILAMENT_DRYER_help)
+        self.gcode.register_command("ENABLE_FILAMENT_DRYER",
+            self.cmd_ENABLE_FILAMENT_DRYER,
+            desc=self.cmd_ENABLE_FILAMENT_DRYER_help)
         self.printer.register_event_handler("klippy:connect",
             self.handle_connect)
         self.printer.register_event_handler("klippy:ready",
@@ -74,7 +81,7 @@ class filament_dryer:
                 self.gcode.respond_info("Executing %s" % (self.dryer_off_macro))
                 self.gcode.run_script_from_command(self.dryer_off_macro)
         if reactor.monotonic() > self.dry_target_time or self.heater.target_temp == 0:
-            if self.sensor.humidity > self.target_humidity:
+            if self.sensor.humidity > self.target_humidity and self.dryer_enabled:
                 if self.heater.target_temp == 0:
                     self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=%i" % (self.heater_name, self.auto_target_temp))
                     self.dry_mode = "Auto"
@@ -160,6 +167,17 @@ class filament_dryer:
             if self.manual_dryer_on_macro:
                 self.gcode.respond_info("Executing %s" % (self.manual_dryer_on_macro))
                 self.gcode.run_script_from_command(self.manual_dryer_on_macro)
+
+    cmd_DISABLE_FILAMENT_DRYER_help = "Disables automatic filament dryer"
+    def cmd_DISABLE_FILAMENT_DRYER(self, gcmd):
+        self.gcode.respond_info("Disabling automatic filament dryer")
+        self.dryer_enabled = False
+        self.gcode.run_script_from_command("SET_HEATER_TEMPERATURE HEATER=%s TARGET=0" % (self.heater_name))
+
+    cmd_ENABLE_FILAMENT_DRYER_help = "Enabled automatic filament dryer"
+    def cmd_ENABLE_FILAMENT_DRYER(self, gcmd):
+        self.gcode.respond_info("Enabling automatic filament dryer")
+        self.dryer_enabled = True
 
     cmd_STOP_FILAMENT_DRYER_help = "Stops filament dryer heater"
     def cmd_STOP_FILAMENT_DRYER(self, gcmd):
