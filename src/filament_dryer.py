@@ -193,9 +193,11 @@ class filament_dryer:
             return {
                 'name': self.name,
                 'config': "{'target_humidity': '%f', 'interval': '%i'}" % (self.target_humidity, self.interval),
-                'info': "{'humidity': '%i', 'temperature': '%i', 'dry_mode': '%s', 'dry_time': '%i:%02i:%02i'}" % (self>            }
+                'info': "{'humidity': '%i', 'temperature': '%i', 'dry_mode': '%s', 'dry_time': '%i:%02i:%02i'}" % (self.sensor.humidity, self.sensor.temp, self.dry_mode, hh, mm, ss)
+            }
         except Exception:
             return { }
 
 def load_config_prefix(config):
     return filament_dryer(config)
+
